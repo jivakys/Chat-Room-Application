@@ -1,0 +1,24 @@
+{
+  "name": "chat-room-application",
+  "version": "1.0.0",
+  "description": "This chat app build using Node.js, Express, and MySQL. It includes user registration and authentication, chat room creation, inviting participants, joining rooms, sending messages, and viewing profiles.",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "author": "jivak",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.10.0",
+    "sequelize": "^6.37.3",
+    "socket.io": "^4.7.5",
+    "ws": "^8.17.0"
+  }
+}
