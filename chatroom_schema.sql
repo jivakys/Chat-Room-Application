@@ -1,0 +1,34 @@
+CREATE DATABASE chat_room_app;
+
+USE chat_room_app;
+
+CREATE TABLE users (
+  userId VARCHAR(255) PRIMARY KEY,
+  deviceId VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  phone VARCHAR(255) NOT NULL,
+  availCoins INT DEFAULT 0,
+  isPrime BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE chatrooms (
+  _id VARCHAR(255) PRIMARY KEY,
+  roomName VARCHAR(255) NOT NULL,
+  roomPassword VARCHAR(255) NOT NULL,
+  creator VARCHAR(255) NOT NULL,
+  participants TEXT
+);
+
+CREATE TABLE messages (
+  _id VARCHAR(255) PRIMARY KEY,
+  roomId VARCHAR(255) NOT NULL,
+  userId VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL
+);
+
+CREATE TABLE friendRequests (
+  _id VARCHAR(255) PRIMARY KEY,
+  userId VARCHAR(255) NOT NULL,
+  friendId VARCHAR(255) NOT NULL,
+  status VARCHAR(255) NOT NULL DEFAULT 'pending'
+);
