@@ -1,29 +1,27 @@
-const mysql = require("mysql");
+const { Sequelize, DataTypes } = require("sequelize");
 
-const chatroomSchema = {
+const sequelize = new Sequelize("database", "username", "password", {
+  host: "localhost",
+  dialect: "mysql",
+});
+
+const Chatroom = sequelize.define("Chatroom", {
   _id: {
-    type: String,
-    required: true,
-    unique: true,
+    type: DataTypes.STRING,
+    primaryKey: true,
   },
   roomName: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
   },
   roomPassword: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
   },
   creator: {
-    type: String,
-    required: true,
+    type: DataTypes.STRING,
   },
   participants: {
-    type: Array,
-    default: [],
+    type: DataTypes.TEXT,
   },
-};
-
-const Chatroom = mysql.model("chatrooms", chatroomSchema);
+});
 
 module.exports = Chatroom;

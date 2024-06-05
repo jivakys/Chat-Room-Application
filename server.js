@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
-const mysql = require("mysql");
-const db = require("./utils/db");
+// const db = require("./utils/db");
 const socket = require("./utils/socket");
 require("dotenv").config();
 
@@ -25,4 +24,4 @@ const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}.`);
 });
 
-// socket.init(server);
+socket.init(server);

@@ -1,25 +1,25 @@
-const mysql = require("mysql");
+const { Sequelize, DataTypes } = require("sequelize");
 
-const messageSchema = {
-  _id: {
-    type: String,
-    required: true,
-    unique: true,
+const sequelize = new Sequelize("database", "username", "password", {
+  host: "localhost",
+  dialect: "mysql",
+});
+
+const Message = sequelize.define("Message", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
   },
-  roomId: {
-    type: String,
-    required: true,
+  text: {
+    type: DataTypes.STRING,
   },
   userId: {
-    type: String,
-    required: true,
+    type: DataTypes.INTEGER,
   },
-  message: {
-    type: String,
-    required: true,
+  chatroomId: {
+    type: DataTypes.INTEGER,
   },
-};
-
-const Message = mysql.model("messages", messageSchema);
+});
 
 module.exports = Message;

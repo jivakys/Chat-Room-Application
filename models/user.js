@@ -1,34 +1,22 @@
-const mysql = require("mysql");
-const bcrypt = require("../utils/bcrypt");
+const { Sequelize, DataTypes } = require("sequelize");
 
-const userSchema = {
-  userId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  deviceId: {
-    type: String,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
-    required: true,
-  },
-  availCoins: {
-    type: Number,
-    default: 0,
-  },
-  isPrime: {
-    type: Boolean,
-    default: false,
-  },
-};
+const sequelize = new Sequelize("database", "username", "password", {
+  host: "localhost",
+  dialect: "mysql",
+});
 
-const User = mysql.model("users", userSchema);
+const User = sequelize.define("User", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  username: {
+    type: DataTypes.STRING,
+  },
+  password: {
+    type: DataTypes.STRING,
+  },
+});
 
 module.exports = User;

@@ -1,25 +1,21 @@
-const mysql = require("mysql");
+const { Sequelize, DataTypes } = require("sequelize");
+const sequelize = require("../configs/database");
 
-const friendRequestSchema = {
-  _id: {
-    type: String,
-    required: true,
-    unique: true,
+const FriendRequest = sequelize.define("FriendRequest", {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
   },
-  userId: {
-    type: String,
-    required: true,
+  senderId: {
+    type: DataTypes.INTEGER,
   },
-  friendId: {
-    type: String,
-    required: true,
+  receiverId: {
+    type: DataTypes.INTEGER,
   },
   status: {
-    type: String,
-    default: "pending",
+    type: DataTypes.STRING,
   },
-};
-
-const FriendRequest = mysql.model("friendRequests", friendRequestSchema);
+});
 
 module.exports = FriendRequest;
