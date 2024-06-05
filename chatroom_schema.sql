@@ -8,7 +8,8 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   phone VARCHAR(255) NOT NULL,
   availCoins INT DEFAULT 0,
-  isPrime BOOLEAN DEFAULT FALSE
+  isPrime BOOLEAN DEFAULT FALSE,
+  password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE chatrooms (

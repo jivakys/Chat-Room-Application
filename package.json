@@ -4,7 +4,7 @@
   "description": "This chat app build using Node.js, Express, and MySQL. It includes user registration and authentication, chat room creation, inviting participants, joining rooms, sending messages, and viewing profiles.",
   "main": "server.js",
   "scripts": {
-    "test": "node server.js",
+    "test": "nodemon server.js",
     "start": "node server.js"
   },
   "author": "jivak",
@@ -18,6 +18,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.10.0",
+    "nodemon": "^3.1.3",
     "sequelize": "^6.37.3",
     "socket.io": "^4.7.5",
     "ws": "^8.17.0"
