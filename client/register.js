@@ -35,6 +35,7 @@ document
       if (response.ok) {
         registerMessage.style.color = "green";
         registerMessage.textContent = "User registered successfully!";
+        window.location.href = "index.html";
       } else {
         registerMessage.style.color = "red";
         registerMessage.textContent = data.message || "Error registering user";
