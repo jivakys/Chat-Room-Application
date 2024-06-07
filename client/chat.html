@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="user.html">User Dashboard</a></li>
+                <li><a href="index.html" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Users</h2>
+            <ul id="userList">
+                <!-- User list will be dynamically populated here -->
+            </ul>
+        </aside>
+
+        <main class="chat-container">
+            <div class="chat-window" id="chatWindow">
+                <!-- Chat messages will be dynamically populated here -->
+            </div>
+            <form id="messageForm">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button type="submit">Send</button>
+            </form>
+        </main>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+
+</html>

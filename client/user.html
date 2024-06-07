@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="user.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="user.html">User Dashboard</a></li>
+                <li><a href="index.html" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="userDashboard" class="page">
+        <h2>User Dashboard</h2>
+        <button id="createRoomBtn">Create Room</button>
+        <button id="joinRoomBtn">Join Room</button>
+
+        <div id="createRoomForm" class="hidden">
+            <h3>Create a Chat Room</h3>
+            <form id="createRoom">
+                <input type="text" id="createRoomId" placeholder="Room ID" required>
+                <input type="password" id="createRoomPassword" placeholder="Room Password" required>
+                <button type="submit">Create Room</button>
+            </form>
+            <p id="createRoomMessage" class="error"></p>
+        </div>
+
+        <div id="joinRoomForm" class="hidden">
+            <h3>Join a Chat Room</h3>
+            <form id="joinRoom">
+                <input type="text" id="joinRoomId" placeholder="Room ID" required>
+                <input type="password" id="joinRoomPassword" placeholder="Room Password" required>
+                <button type="submit">Join Room</button>
+            </form>
+            <p id="joinRoomMessage" class="error"></p>
+        </div>
+    </div>
+
+    <script src="user.js"></script>
+</body>
+
+</html>

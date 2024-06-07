@@ -2,12 +2,22 @@ const User = require("../models/user");
 
 const getProfile = async (req, res) => {
   const { userId } = req.params;
-  const user = await User.findOne({ userId });
-  if (!user) {
-    res.status(404).send({ message: "User not found" });
-  } else {
-    res.send(user);
+
+  try {
+    const user = await User.findUserById(userId);
+    // console.log("userProfile = ", user);
+    if (user) {
+      const { password, ...profile } = user;
+      res.status(200).json(profile);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error retrieving profile:", error);
+    res.status(500).json({ message: "Error retrieving profile" });
   }
 };
 
-module.exports = { getProfile };
+module.exports = {
+  getProfile,
+};

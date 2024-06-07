@@ -1,27 +1,86 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const db = require("../utils/db");
 
-const sequelize = new Sequelize("database", "username", "password", {
-  host: "localhost",
-  dialect: "mysql",
-});
+const Chatroom = {
+  createdChatroom: (roomId, creatorId, password) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "INSERT INTO chatrooms (roomId, creatorId, password) VALUES (?, ?, ?)",
+        [roomId, creatorId, password],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  },
 
-const Chatroom = sequelize.define("Chatroom", {
-  _id: {
-    type: DataTypes.STRING,
-    primaryKey: true,
+  isPrimeMember: (userId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT isPrime FROM users WHERE userId = ?",
+        [userId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results[0] && results[0].isPrime === 1);
+          }
+        }
+      );
+    });
   },
-  roomName: {
-    type: DataTypes.STRING,
+
+  findChatroomById: (roomId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM chatrooms WHERE roomId = ?",
+        [roomId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results[0]);
+          }
+        }
+      );
+    });
   },
-  roomPassword: {
-    type: DataTypes.STRING,
+
+  checkFreeRoomJoin: (userId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT COUNT(*) as totalRooms FROM chatrooms WHERE creatorId = ?",
+        [userId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            const totalRoomsJoined = results[0].totalRooms;
+            const isFreeRoomAvailable = totalRoomsJoined < 1;
+            resolve(isFreeRoomAvailable);
+          }
+        }
+      );
+    });
   },
-  creator: {
-    type: DataTypes.STRING,
+  countUserRooms: (userId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT COUNT(*) as count FROM user_rooms WHERE userId = ?",
+        [userId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results[0].count);
+          }
+        }
+      );
+    });
   },
-  participants: {
-    type: DataTypes.TEXT,
-  },
-});
+};
 
 module.exports = Chatroom;

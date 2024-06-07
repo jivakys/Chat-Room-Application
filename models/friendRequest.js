@@ -1,21 +1,22 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const sequelize = require("../configs/database");
+const db = require("../utils/db");
 
-const FriendRequest = sequelize.define("FriendRequest", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+const FriendRequest = {
+  createFriendRequest: (requestId, senderId, receiverId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "INSERT INTO friendRequests (requestId, senderId, receiverId) VALUES (?, ?, ?)",
+        [requestId, senderId, receiverId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
   },
-  senderId: {
-    type: DataTypes.INTEGER,
-  },
-  receiverId: {
-    type: DataTypes.INTEGER,
-  },
-  status: {
-    type: DataTypes.STRING,
-  },
-});
+  // Additional methods as needed
+};
 
 module.exports = FriendRequest;

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: #333;
+            padding: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: #ffb84d;
+        }
+
+        .page {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            border: 4px solid #ffb84d;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-details p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .profile-details p strong {
+            color: #333;
+        }
+
+        .error {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* Button Styling */
+        button {
+            background-color: #ffb84d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #ffa500;
+        }
+
+        @media (max-width: 400px) {
+            .page {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .profile-pic {
+                width: 100px;
+                height: 100px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            .profile-details p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="user.html">User Dashboard</a></li>
+                <li><a href="#" id="logoutBtn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="profilePage" class="page">
+        <h2>User Profile</h2>
+        <img src="data:image/png;base64,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"
+            alt="Profile Picture" class="profile-pic">
+        <div class="profile-details">
+            <p><strong>Name:</strong> <span id="profileName"></span></p>
+            <p><strong>Phone:</strong> <span id="profilePhone"></span></p>
+            <p><strong>Available Coins:</strong> <span id="profileCoins"></span></p>
+            <p><strong>Prime Member:</strong> <span id="profilePrime"></span></p>
+        </div>
+        <p id="profileMessage" class="error"></p>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileName = document.getElementById('profileName');
+        const profilePhone = document.getElementById('profilePhone');
+        const profileCoins = document.getElementById('profileCoins');
+        const profilePrime = document.getElementById('profilePrime');
+        const profileMessage = document.getElementById('profileMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        const token = localStorage.getItem('token');
+        const userId = localStorage.getItem('userId');
+
+        if (!token || !userId) {
+            profileMessage.textContent = 'Unauthorized. Please log in.';
+            return;
+        }
+
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/profile/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    profileName.textContent = data.name;
+                    profilePhone.textContent = data.phone;
+                    profileCoins.textContent = data.availCoins;
+                    profilePrime.textContent = data.isPrime ? 'Yes' : 'No';
+                } else {
+                    profileMessage.textContent = 'Error fetching profile';
+                }
+            } catch (error) {
+                profileMessage.textContent = 'Error fetching profile';
+            }
+        };
+
+        fetchProfile();
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('name');
+            window.location.href = 'index.html';
+        });
+    });
+
+</script>
+
+</html>

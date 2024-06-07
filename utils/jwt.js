@@ -1,19 +1,19 @@
 const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 
-const generateToken = (user) => {
-  const payload = {
-    userId: user.userId,
-    deviceId: user.deviceId,
-    name: user.name,
-    phone: user.phone,
-    availCoins: user.availCoins,
-    isPrime: user.isPrime,
-  };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+dotenv.config();
+
+const jwtUtil = {
+  generateToken: (payload) => {
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  },
+  verifyToken: (token) => {
+    try {
+      return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      return null;
+    }
+  },
 };
 
-const verifyToken = (token) => {
-  return jwt.verify(token, process.env.JWT_SECRET);
-};
-
-module.exports = { generateToken, verifyToken };
+module.exports = jwtUtil;

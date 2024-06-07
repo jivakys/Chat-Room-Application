@@ -1,18 +1,19 @@
-const io = require("socket.io");
+const socketIo = require("socket.io");
+
+let io;
 
 const init = (server) => {
-  const socket = io(server);
+  io = socketIo(server);
 
-  socket.on("connection", (socket) => {
+  io.on("connection", (socket) => {
     console.log("New client connected");
 
     socket.on("joinRoom", ({ roomId }) => {
       socket.join(roomId);
-      console.log(`Client joined room ${roomId}`);
     });
 
     socket.on("sendMessage", ({ roomId, message }) => {
-      socket.to(roomId).emit("newMessage", message);
+      io.to(roomId).emit("receiveMessage", message);
     });
 
     socket.on("disconnect", () => {
@@ -21,4 +22,6 @@ const init = (server) => {
   });
 };
 
-module.exports = { init };
+module.exports = {
+  init,
+};

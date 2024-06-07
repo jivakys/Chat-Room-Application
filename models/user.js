@@ -1,40 +1,85 @@
-const { Sequelize, DataTypes } = require("sequelize");
-const sequelize = require("../configs/database");
+const db = require("../utils/db");
 
-const User = sequelize.define(
-  "User",
-  {
-    userId: {
-      type: DataTypes.STRING(255),
-      primaryKey: true,
-    },
-    deviceId: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    name: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    phone: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    availCoins: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    isPrime: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    password: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
+const User = {
+  createUser: (userId, deviceId, name, phone, availCoins, hash, isPrime) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "INSERT INTO users (userId, deviceId, name, phone, availCoins, password, isPrime) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [userId, deviceId, name, phone, availCoins, hash, isPrime],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
   },
-  {
-    timestamps: false,
-  }
-);
+
+  findUserById: (userId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM users WHERE userId = ?",
+        [userId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results[0]);
+          }
+        }
+      );
+    });
+  },
+
+  countUserRooms: (userId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT COUNT(*) as count FROM user_rooms WHERE userId = ?",
+        [userId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results[0].count);
+          }
+        }
+      );
+    });
+  },
+
+  joinRoom: (userId, roomId) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "INSERT INTO user_rooms (userId, roomId) VALUES (?, ?)",
+        [userId, roomId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  },
+
+  deductCoins: (userId, coins) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "UPDATE users SET availCoins = availCoins - ? WHERE userId = ?",
+        [coins, userId],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
+  },
+};
+
 module.exports = User;

@@ -1,25 +1,21 @@
-const { Sequelize, DataTypes } = require("sequelize");
+const db = require("../utils/db");
 
-const sequelize = new Sequelize("database", "username", "password", {
-  host: "localhost",
-  dialect: "mysql",
-});
-
-const Message = sequelize.define("Message", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+const Message = {
+  createMessage: (messageId, roomId, userId, content) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "INSERT INTO messages (messageId, roomId, userId, content) VALUES (?, ?, ?, ?)",
+        [messageId, roomId, userId, content],
+        (error, results) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(results);
+          }
+        }
+      );
+    });
   },
-  text: {
-    type: DataTypes.STRING,
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-  },
-  chatroomId: {
-    type: DataTypes.INTEGER,
-  },
-});
+};
 
 module.exports = Message;
