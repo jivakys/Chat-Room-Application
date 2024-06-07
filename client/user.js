@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         createRoomMessage.style.color = "green";
+        localStorage.setItem("roomId", roomId);
         createRoomMessage.textContent = "Chatroom created successfully";
       } else {
         createRoomMessage.style.color = "red";
@@ -73,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         joinRoomMessage.style.color = "green";
+        localStorage.setItem("roomId", roomId);
         joinRoomMessage.textContent = "Joined the room successfully";
         window.location.href = "chat.html";
       } else {

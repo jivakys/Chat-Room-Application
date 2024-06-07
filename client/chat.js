@@ -1,57 +1,102 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const chatWindow = document.getElementById("chatWindow");
-  const messageForm = document.getElementById("messageForm");
-  const messageInput = document.getElementById("messageInput");
-  const userList = document.getElementById("userList");
+  const socketUrl = "ws://localhost:5000";
+  let socket;
 
-  const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
+  const connectWebSocket = () => {
+    socket = new WebSocket(socketUrl);
 
-  if (!token || !userId) {
-    alert("You need to be logged in to access the chat room.");
-    window.location.href = "index.html";
-    return;
-  }
+    socket.onopen = () => {
+      console.log("Connected to WebSocket server");
 
-  const ws = new WebSocket("ws://localhost:3000");
+      const roomId = localStorage.getItem("roomId");
+      const userId = localStorage.getItem("userId");
+      const userName = localStorage.getItem("name");
+      if (roomId && userId) {
+        socket.send(JSON.stringify({ type: "join", roomId, userId }));
+      }
+    };
 
-  ws.onopen = () => {
-    console.log("Connected to WebSocket server");
-    ws.send(JSON.stringify({ type: "join", token }));
-  };
+    socket.onmessage = async (event) => {
+      let data;
+      try {
+        data = JSON.parse(event.data);
+      } catch (error) {
+        console.error("Error parsing incoming message:", error);
+        return;
+      }
 
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    console.log("Received data:", data);
+      const chatWindow = document.getElementById("chatWindow");
 
-    if (data.type === "userList") {
-      userList.innerHTML = "";
-      data.users.forEach((user) => {
-        const li = document.createElement("li");
-        li.textContent = user.name;
-        userList.appendChild(li);
-      });
-    } else if (data.type === "chatMessage") {
       const messageElement = document.createElement("div");
-      messageElement.textContent = `${data.user}: ${data.text}`;
+      const senderName =
+        data.userId === localStorage.getItem("userId")
+          ? localStorage.getItem("name")
+          : data.userName;
+      messageElement.textContent = `${senderName}: ${data.content}`;
       chatWindow.appendChild(messageElement);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
+    };
+
+    socket.onclose = () => {
+      console.log("Disconnected from WebSocket server");
+      setTimeout(connectWebSocket, 1000);
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      socket.close();
+    };
   };
 
-  ws.onclose = () => {
-    console.log("Disconnected from WebSocket server");
-  };
+  connectWebSocket();
 
-  messageForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const message = messageInput.value.trim();
-    if (message) {
-      ws.send(JSON.stringify({ type: "message", text: message, token }));
-      messageInput.value = "";
-    }
-  });
-  logoutBtn.addEventListener("click", () => {
+  document
+    .getElementById("messageForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const messageInput = document.getElementById("messageInput");
+      const roomId = localStorage.getItem("roomId");
+      const userId = localStorage.getItem("userId");
+      const messageId = new Date().getTime().toString();
+
+      const message = {
+        type: "message",
+        messageId,
+        roomId,
+        userId,
+        content: messageInput.value,
+      };
+
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify(message));
+
+        try {
+          await fetch("http://localhost:5000/api/messages", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              messageId,
+              roomId,
+              userId,
+              content: messageInput.value,
+            }),
+          });
+          console.log("Message sent and stored in database");
+        } catch (error) {
+          console.error("Error sending message:", error);
+        }
+
+        messageInput.value = "";
+      } else {
+        console.warn(
+          "WebSocket is not open. Ready state is:",
+          socket.readyState
+        );
+      }
+    });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("name");
