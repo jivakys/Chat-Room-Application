@@ -27,6 +27,45 @@ A robust chat room system using JavaScript, Node.js, MySQL, and Express. The app
 ### Friend Requests
 - `POST /api/friend-requests`: Send a friend request
 
+
+## Features
+
+- Real-time communication using WebSockets.
+- User authentication and authorization.
+- Room-based chat functionality.
+- Storing chat messages in a database.
+
+## Tech Stack
+
+- **Frontend:**
+  - HTML
+  - CSS
+  - JavaScript
+
+- **Backend:**
+  - Node.js
+  - Express.js
+  - WebSocket
+
+- **Database:**
+  - MySQL
+
+- **Other Tools:**
+  - dotenv (for environment variables)
+  - cors (for Cross-Origin Resource Sharing)
+
+## Packages
+
+- **express**: Fast, unopinionated, minimalist web framework for Node.js.
+- **http**: Node.js built-in module for HTTP server and client functionality.
+- **ws**: Simple to use, blazing fast and thoroughly tested WebSocket client and server for Node.js.
+- **body-parser**: Node.js body parsing middleware.
+- **dotenv**: Module to load environment variables from a `.env` file.
+- **path**: Node.js built-in module to handle and transform file paths.
+- **cors**: Node.js package for providing a Connect/Express middleware that can be used to enable CORS with various options.
+- **mysql**: Node.js driver for MySQL.
+
+
 ## Security Measures
 
 - Passwords are stored securely using bcrypt.
