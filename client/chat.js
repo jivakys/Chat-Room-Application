@@ -1,60 +1,56 @@
-document.addEventListener("DOMContentLoaded", (event) => {
+document.addEventListener("DOMContentLoaded", () => {
+  const chatWindow = document.getElementById("chatWindow");
+  const messageForm = document.getElementById("messageForm");
+  const messageInput = document.getElementById("messageInput");
+  const userList = document.getElementById("userList");
+
   const token = localStorage.getItem("token");
-  if (!token) {
+  const userId = localStorage.getItem("userId");
+
+  if (!token || !userId) {
+    alert("You need to be logged in to access the chat room.");
     window.location.href = "index.html";
     return;
   }
 
-  const ws = new WebSocket("ws://localhost:8080");
-  const messageForm = document.getElementById("messageForm");
-  const messageInput = document.getElementById("messageInput");
-  const chatWindow = document.getElementById("chatWindow");
-  const userList = document.getElementById("userList");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const ws = new WebSocket("ws://localhost:3000");
 
   ws.onopen = () => {
-    console.log("WebSocket connection opened");
+    console.log("Connected to WebSocket server");
     ws.send(JSON.stringify({ type: "join", token }));
   };
 
-  ws.onerror = (error) => {
-    console.error("WebSocket error:", error);
-  };
-
   ws.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    console.log("Received message:", message);
+    const data = JSON.parse(event.data);
+    console.log("Received data:", data);
 
-    if (message.type === "userList") {
+    if (data.type === "userList") {
       userList.innerHTML = "";
-      message.users.forEach((user) => {
+      data.users.forEach((user) => {
         const li = document.createElement("li");
         li.textContent = user.name;
         userList.appendChild(li);
       });
-    } else if (message.type === "chatMessage") {
-      const messageDiv = document.createElement("div");
-      messageDiv.textContent = `${message.user}: ${message.text}`;
-      chatWindow.appendChild(messageDiv);
+    } else if (data.type === "chatMessage") {
+      const messageElement = document.createElement("div");
+      messageElement.textContent = `${data.user}: ${data.text}`;
+      chatWindow.appendChild(messageElement);
       chatWindow.scrollTop = chatWindow.scrollHeight;
     }
   };
 
   ws.onclose = () => {
-    console.log("WebSocket connection closed");
+    console.log("Disconnected from WebSocket server");
   };
 
   messageForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const message = messageInput.value.trim();
     if (message) {
-      const messageObj = { type: "message", text: message, token };
-      console.log("Sending message:", messageObj);
-      ws.send(JSON.stringify(messageObj));
+      ws.send(JSON.stringify({ type: "message", text: message, token }));
       messageInput.value = "";
     }
   });
-
   logoutBtn.addEventListener("click", () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
