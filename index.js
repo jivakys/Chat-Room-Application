@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth");
 const chatroomRoutes = require("./routes/chatroom");
 const profileRoutes = require("./routes/profile");
 const friendRequestRoutes = require("./routes/friendRequest");
+const jwt = require("jsonwebtoken");
 const socket = require("./utils/socket");
 
 dotenv.config();
@@ -18,23 +19,21 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware setup
 app.use(cors());
 app.use(express.static(path.join(__dirname, "client")));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api", chatroomRoutes);
 app.use("/api", profileRoutes);
 app.use("/api/friend-requests", friendRequestRoutes);
 
-// Start server
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// WebSocket server logic
+let users = {};
+
 wss.on("connection", (ws) => {
   ws.on("message", (message) => {
     const data = JSON.parse(message);
@@ -72,8 +71,6 @@ wss.on("connection", (ws) => {
   });
 });
 
-let users = {};
-
 function broadcastUserList() {
   const userList = Object.values(users).map((ws) => ({
     userId: ws.userId,
@@ -88,7 +85,6 @@ function broadcastMessage(message) {
   Object.values(users).forEach((ws) => ws.send(messageStr));
 }
 
-// Start listening
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   console.log("WebSocket server is running on ws://localhost:8080");
