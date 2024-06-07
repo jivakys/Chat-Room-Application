@@ -1,7 +1,9 @@
 const express = require("express");
+const WebSocket = require("ws");
+const { wss } = require("../index");
 const router = express.Router();
 
-router.post("/", (req, res) => {
+router.post("/messages", (req, res) => {
   const message = req.body.message;
 
   wss.clients.forEach(function each(client) {

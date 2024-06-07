@@ -1,93 +1,89 @@
 const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const path = require("path");
 const cors = require("cors");
-const http = require("http");
-const WebSocket = require("ws");
-
 const db = require("./utils/db");
-const authRoutes = require("./routes/auth");
-const chatroomRoutes = require("./routes/chatroom");
-const profileRoutes = require("./routes/profile");
-const friendRequestRoutes = require("./routes/friendRequest");
-const jwt = require("jsonwebtoken");
-const socket = require("./utils/socket");
+const authRouter = require("./routes/auth");
+const chatroomRouter = require("./routes/chatroom");
+const messageRouter = require("./routes/message");
+const profileRouter = require("./routes/profile");
+const friendRequestRouter = require("./routes/friendRequest");
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-
 app.use(cors());
-app.use(express.static(path.join(__dirname, "client")));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.use("/api/auth", authRoutes);
-app.use("/api", chatroomRoutes);
-app.use("/api", profileRoutes);
-app.use("/api/friend-requests", friendRequestRoutes);
-
 const server = http.createServer(app);
+
 const wss = new WebSocket.Server({ server });
 
-let users = {};
-
 wss.on("connection", (ws) => {
-  ws.on("message", (message) => {
+  console.log("New client connected");
+
+  ws.on("message", async (message) => {
+    console.log("Received message:", message);
     const data = JSON.parse(message);
-    console.log("Received data:", data);
 
     if (data.type === "join") {
-      try {
-        const decoded = jwt.verify(data.token, process.env.JWT_SECRET);
-        ws.userId = decoded.userId;
-        ws.userName = "User " + decoded.userId;
-        users[ws.userId] = ws;
-        broadcastUserList();
-      } catch (error) {
-        console.error("Invalid token:", error);
-        ws.close();
-      }
+      ws.roomId = data.roomId;
+      ws.userId = data.userId;
     } else if (data.type === "message") {
-      if (ws.userId) {
-        const messageData = {
-          type: "chatMessage",
-          user: ws.userName,
-          text: data.text,
-        };
-        broadcastMessage(messageData);
-      } else {
-        console.error("Unauthorized message attempt");
-        ws.close();
+      const messageData = JSON.stringify({
+        type: "message",
+        messageId: data.messageId,
+        roomId: data.roomId,
+        userId: data.userId,
+        content: data.content,
+      });
+
+      wss.clients.forEach((client) => {
+        if (
+          client.readyState === WebSocket.OPEN &&
+          client.roomId === ws.roomId
+        ) {
+          client.send(messageData);
+        }
+      });
+
+      try {
+        await db.query(
+          "INSERT INTO messages (messageId, roomId, userId, content) VALUES (?, ?, ?, ?)",
+          [data.messageId, data.roomId, data.userId, data.content]
+        );
+        console.log("Message stored in database");
+      } catch (error) {
+        console.error("Error storing message in database:", error);
       }
     }
   });
 
   ws.on("close", () => {
-    delete users[ws.userId];
-    broadcastUserList();
+    console.log("Client disconnected");
   });
+
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+    ws.close();
+  };
 });
 
-function broadcastUserList() {
-  const userList = Object.values(users).map((ws) => ({
-    userId: ws.userId,
-    name: ws.userName,
-  }));
-  const message = JSON.stringify({ type: "userList", users: userList });
-  Object.values(users).forEach((ws) => ws.send(message));
-}
+app.use(express.static(path.join(__dirname, "client")));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-function broadcastMessage(message) {
-  const messageStr = JSON.stringify(message);
-  Object.values(users).forEach((ws) => ws.send(messageStr));
-}
+// Routes
+app.use("/api/auth", authRouter);
+app.use("/api", chatroomRouter);
+app.use("/api", messageRouter);
+app.use("/api", profileRouter);
+app.use("/api/friend-requests", friendRequestRouter);
 
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
-  console.log("WebSocket server is running on ws://localhost:8080");
+  console.log("WebSocket server is running on ws://localhost:5000");
 });
-
-socket.init(server);
+module.exports = { app, wss };
